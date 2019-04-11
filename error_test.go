@@ -21,7 +21,7 @@ func Test_newError_UnknownNoBody(t *testing.T) {
 }
 
 func Test_newError_ErrBitStateNotFound(t *testing.T) {
-	assert.Equal(t, ErrBitStateNotFound, newError(http.StatusOK, []byte("Bit State Not Found")))
+	assert.Equal(t, ErrBitStateNotFound, newError(http.StatusOK, []byte("Failed to find bit state")))
 }
 
 func Test_newError_ErrBadDeviceToken(t *testing.T) {

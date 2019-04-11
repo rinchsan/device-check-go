@@ -2,6 +2,8 @@
 
 ![golang](https://img.shields.io/badge/golang-1.11-blue.svg?style=flat)
 [![GoDoc](https://godoc.org/github.com/snowman-mh/device-check-go?status.svg)](https://godoc.org/github.com/snowman-mh/device-check-go)
+[![Build Status](https://travis-ci.org/snowman-mh/device-check-go.svg?branch=master)](https://travis-ci.org/snowman-mh/device-check-go)
+[![codecov.io](https://codecov.io/github/snowman-mh/device-check-go/coverage.svg?branch=master)](https://codecov.io/github/snowman-mh/device-check-go?branch=master)
 [![Go Report Card](https://goreportcard.com/badge/github.com/snowman-mh/device-check-go)](https://goreportcard.com/report/github.com/snowman-mh/device-check-go)
 [![MIT License](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](LICENSE)
 
