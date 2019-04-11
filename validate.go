@@ -24,8 +24,9 @@ func (api api) validateDeviceToken(deviceToken, jwt string) (int, []byte, error)
 	return api.do(jwt, validateDeviceTokenPath, b)
 }
 
+// ValidateDeviceToken validates a device for device token
 func (client Client) ValidateDeviceToken(deviceToken string) error {
-	key, err := client.cred.Key()
+	key, err := client.cred.key()
 	if err != nil {
 		return err
 	}

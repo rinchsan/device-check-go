@@ -19,7 +19,7 @@ func TestJWT_newJWT(t *testing.T) {
 
 func TestJWT_generate(t *testing.T) {
 	cred := NewCredentialFile("revoked_private_key.p8")
-	key, err := cred.Key()
+	key, err := cred.key()
 	assert.Nil(t, err)
 	assert.NotNil(t, key)
 	issuer := "issuer"

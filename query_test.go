@@ -12,9 +12,9 @@ import (
 func TestTime_MarshalJSON(t *testing.T) {
 	year := 2019
 	month := time.April
-	t_ := Time{time.Date(year, month, 1, 0, 0, 0, 0, time.UTC)}
+	testTime := dcTime{time.Date(year, month, 1, 0, 0, 0, 0, time.UTC)}
 
-	b, err := t_.MarshalJSON()
+	b, err := testTime.MarshalJSON()
 
 	assert := assert.New(t)
 	assert.Nil(err)
@@ -24,15 +24,15 @@ func TestTime_MarshalJSON(t *testing.T) {
 func TestTime_UnmarshalJSON(t *testing.T) {
 	year := 2019
 	month := time.April
-	b, err := Time{time.Date(year, month, 1, 0, 0, 0, 0, time.UTC)}.MarshalJSON()
+	b, err := dcTime{time.Date(year, month, 1, 0, 0, 0, 0, time.UTC)}.MarshalJSON()
 	assert.Nil(t, err)
 
-	t_ := Time{}
-	err = t_.UnmarshalJSON(b)
+	testTime := dcTime{}
+	err = testTime.UnmarshalJSON(b)
 	assert := assert.New(t)
 	assert.Nil(err)
-	assert.Equal(year, t_.Year())
-	assert.Equal(month, t_.Month())
+	assert.Equal(year, testTime.Year())
+	assert.Equal(month, testTime.Month())
 }
 
 func TestClient_QueryTwoBits_InvalidKey(t *testing.T) {

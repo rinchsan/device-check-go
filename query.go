@@ -16,23 +16,24 @@ type queryTwoBitsRequestBody struct {
 	Timestamp     int64  `json:"timestamp"`
 }
 
+// QueryTwoBitsResult provides a result of query-two-bits method
 type QueryTwoBitsResult struct {
-	Bit0           bool `json:"bit0"`
-	Bit1           bool `json:"bit1"`
-	LastUpdateTime Time `json:"last_update_time"`
+	Bit0           bool   `json:"bit0"`
+	Bit1           bool   `json:"bit1"`
+	LastUpdateTime dcTime `json:"last_update_time"`
 }
 
-type Time struct {
+type dcTime struct {
 	time.Time
 }
 
 const timeFormat = "2006-01"
 
-func (t Time) MarshalJSON() ([]byte, error) {
+func (t dcTime) MarshalJSON() ([]byte, error) {
 	return json.Marshal(t.Format(timeFormat))
 }
 
-func (t *Time) UnmarshalJSON(b []byte) (err error) {
+func (t *dcTime) UnmarshalJSON(b []byte) (err error) {
 	t.Time, err = time.Parse(timeFormat, strings.Trim(string(b), `"`))
 	return
 }
@@ -47,8 +48,9 @@ func (api api) queryTwoBits(deviceToken, jwt string) (int, []byte, error) {
 	return api.do(jwt, queryTwoBitsPath, b)
 }
 
+// QueryTwoBits queries two bits for device token
 func (client Client) QueryTwoBits(deviceToken string, result *QueryTwoBitsResult) error {
-	key, err := client.cred.Key()
+	key, err := client.cred.key()
 	if err != nil {
 		return err
 	}
