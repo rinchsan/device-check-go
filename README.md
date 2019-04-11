@@ -1,6 +1,9 @@
 # device-check-go
 
 ![golang](https://img.shields.io/badge/golang-1.11-blue.svg?style=flat)
+[![GoDoc](https://godoc.org/github.com/snowman-mh/device-check-go?status.svg)](https://godoc.org/github.com/snowman-mh/device-check-go)
+[![Go Report Card](https://goreportcard.com/badge/github.com/snowman-mh/device-check-go)](https://goreportcard.com/report/github.com/snowman-mh/device-check-go)
+[![MIT License](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](LICENSE)
 
 iOS DeviceCheck SDK for Go - query and modify the per-device bits
 
