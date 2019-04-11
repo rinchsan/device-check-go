@@ -10,7 +10,7 @@ import (
 )
 
 var (
-	ErrBitStateNotFound          = errors.New("Bit State Not Found") // TODO: not foundのエラー文調べる
+	ErrBitStateNotFound          = errors.New("Failed to find bit state")
 	ErrBadDeviceToken            = errors.New("Missing or incorrectly formatted device token payload")
 	ErrBadBits                   = errors.New("Missing or incorrectly formatted bits")
 	ErrBadTimestamp              = errors.New("Missing or incorrectly formatted time stamp")
