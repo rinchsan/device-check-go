@@ -48,8 +48,8 @@ func newUnknownError(code int, body []byte) error {
 	}
 
 	if body == nil {
-		return errors.New(fmt.Sprintf("Unknown error (code: %d)", code))
+		return fmt.Errorf("Unknown error (code: %d)", code)
 	}
 
-	return errors.New(fmt.Sprintf("%s (code: %d)", *(*string)(unsafe.Pointer(&body)), code))
+	return fmt.Errorf("%s (code: %d)", *(*string)(unsafe.Pointer(&body)), code)
 }
