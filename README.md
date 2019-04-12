@@ -1,6 +1,7 @@
 # device-check-go
 
 ![golang](https://img.shields.io/badge/golang-1.11-blue.svg?style=flat)
+![GitHub release](https://img.shields.io/github/release/snowman-mh/device-check-go.svg?colorB=7E7E7E)
 [![GoDoc](https://godoc.org/github.com/snowman-mh/device-check-go?status.svg)](https://godoc.org/github.com/snowman-mh/device-check-go)
 [![Build Status](https://travis-ci.org/snowman-mh/device-check-go.svg?branch=master)](https://travis-ci.org/snowman-mh/device-check-go)
 [![codecov.io](https://codecov.io/github/snowman-mh/device-check-go/coverage.svg?branch=master)](https://codecov.io/github/snowman-mh/device-check-go?branch=master)
