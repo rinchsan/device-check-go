@@ -4,9 +4,12 @@ import "net/http"
 
 // Client provides methods to use DeviceCheck API
 type Client interface {
-	QueryTwoBits(string, *QueryTwoBitsResult) error
-	UpdateTwoBits(string, bool, bool) error
-	ValidateDeviceToken(string) error
+	// QueryTwoBits queries two bits for device token
+	QueryTwoBits(deviceToken string, result *QueryTwoBitsResult) error
+	// UpdateTwoBits updates two bits for device token
+	UpdateTwoBits(deviceToken string, bit0, bit1 bool) error
+	// ValidateDeviceToken validates a device for device token
+	ValidateDeviceToken(deviceToken string) error
 }
 
 type clientImpl struct {
