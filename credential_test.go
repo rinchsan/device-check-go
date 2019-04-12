@@ -11,7 +11,7 @@ import (
 func TestNewCredentialFile(t *testing.T) {
 	filename := "revoked_private_key.p8"
 
-	cred := NewCredentialFile(filename)
+	cred := NewCredentialFile(filename).(credentialFile)
 
 	assert.Equal(t, filename, cred.filename)
 }
@@ -40,7 +40,7 @@ func TestNewCredentialBytes(t *testing.T) {
 	raw, err := ioutil.ReadFile("revoked_private_key.p8")
 	assert.Nil(t, err)
 
-	cred := NewCredentialBytes(raw)
+	cred := NewCredentialBytes(raw).(credentialBytes)
 
 	assert.Equal(t, raw, cred.raw)
 }
@@ -62,7 +62,7 @@ func TestNewCredentialString(t *testing.T) {
 	assert.Nil(t, err)
 	str := *(*string)(unsafe.Pointer(&raw))
 
-	cred := NewCredentialString(str)
+	cred := NewCredentialString(str).(credentialString)
 
 	assert.Equal(t, str, cred.str)
 }

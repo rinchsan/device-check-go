@@ -9,7 +9,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-// Errors
+// Errors from DeviceCheck API
 var (
 	ErrBitStateNotFound          = errors.New("Failed to find bit state")
 	ErrBadDeviceToken            = errors.New("Missing or incorrectly formatted device token payload")

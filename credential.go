@@ -12,19 +12,18 @@ type Credential interface {
 	key() (*ecdsa.PrivateKey, error)
 }
 
-// CredentialFile provides credential from private key file
-type CredentialFile struct {
+type credentialFile struct {
 	filename string
 }
 
 // NewCredentialFile returns credential from private key file
-func NewCredentialFile(filename string) CredentialFile {
-	return CredentialFile{
+func NewCredentialFile(filename string) Credential {
+	return credentialFile{
 		filename: filename,
 	}
 }
 
-func (cred CredentialFile) key() (*ecdsa.PrivateKey, error) {
+func (cred credentialFile) key() (*ecdsa.PrivateKey, error) {
 	raw, err := ioutil.ReadFile(cred.filename)
 	if err != nil {
 		return nil, err
@@ -32,34 +31,32 @@ func (cred CredentialFile) key() (*ecdsa.PrivateKey, error) {
 	return ecc.ReadPrivate(raw)
 }
 
-// CredentialBytes provides credential from private key bytes
-type CredentialBytes struct {
+type credentialBytes struct {
 	raw []byte
 }
 
 // NewCredentialBytes returns credential from private key bytes
-func NewCredentialBytes(raw []byte) CredentialBytes {
-	return CredentialBytes{
+func NewCredentialBytes(raw []byte) Credential {
+	return credentialBytes{
 		raw: raw,
 	}
 }
 
-func (cred CredentialBytes) key() (*ecdsa.PrivateKey, error) {
+func (cred credentialBytes) key() (*ecdsa.PrivateKey, error) {
 	return ecc.ReadPrivate(cred.raw)
 }
 
-// CredentialString provides credential from private key string
-type CredentialString struct {
+type credentialString struct {
 	str string
 }
 
 // NewCredentialString returns credential from private key string
-func NewCredentialString(str string) CredentialString {
-	return CredentialString{
+func NewCredentialString(str string) Credential {
+	return credentialString{
 		str: str,
 	}
 }
 
-func (cred CredentialString) key() (*ecdsa.PrivateKey, error) {
+func (cred credentialString) key() (*ecdsa.PrivateKey, error) {
 	return ecc.ReadPrivate([]byte(cred.str))
 }
