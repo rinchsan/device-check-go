@@ -13,7 +13,7 @@ const (
 	productionBaseURL  = "https://api.devicecheck.apple.com/v1"
 )
 
-func newBaseURL(env environment) string {
+func newBaseURL(env Environment) string {
 	switch env {
 	case Development:
 		return developmentBaseURL
@@ -29,14 +29,14 @@ type api struct {
 	baseURL string
 }
 
-func newAPI(env environment) api {
+func newAPI(env Environment) api {
 	return api{
 		client:  new(http.Client),
 		baseURL: newBaseURL(env),
 	}
 }
 
-func newAPIWithHTTPClient(client *http.Client, env environment) api {
+func newAPIWithHTTPClient(client *http.Client, env Environment) api {
 	return api{
 		client:  client,
 		baseURL: newBaseURL(env),
