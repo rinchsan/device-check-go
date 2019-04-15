@@ -1,17 +1,18 @@
 language: go
 go:
-  - 1.11.4
+  - 1.11.x
+  - 1.12.x
 env:
   global:
     - GO111MODULE=on
 install:
-  - GO111MODULE=off go get -u golang.org/x/tools/cmd/goimports
-  - GO111MODULE=off go get -u github.com/golang/lint/golint
+  - go get -u golang.org/x/tools/cmd/goimports
+  - go get -u golang.org/x/lint/golint
 script:
-  - diff <(goimports -d .) <(printf "")
-  - diff <(golint ./...) <(printf "")
-  - go fmt $(go list ./...)
-  - go vet $(go list ./...)
+  - diff <(goimports -d *.go) <(printf "")
+  - diff <(golint *.go) <(printf "")
+  - diff <(gofmt -l *.go) <(printf "")
+  - diff <(go vet *.go) <(printf "")
   - go test -coverprofile=coverage.txt -covermode=atomic
 after_success:
   - bash <(curl -s https://codecov.io/bash)
