@@ -18,41 +18,42 @@ go get github.com/snowman-mh/device-check-go
 
 ## Get started
 
-### Query two bits
+### Initialize SDK
 
 ```go
 import "github.com/snowman-mh/device-check-go"
 
-cred := devicecheck.NewCredentialFile("/path/to/private/key/file")
+cred := devicecheck.NewCredentialFile("/path/to/private/key/file") // You can create credential also from raw string/bytes
 cfg := devicecheck.NewConfig("ISSUER", "KEY_ID", devicecheck.Development)
 client := devicecheck.New(cred, cfg)
+````
 
+### Use DeviceCheck API
+
+#### Query two bits
+
+```go
 result := devicecheck.QueryTwoBitsResult{}
-err := client.QueryTwoBits("DEVICE_TOKEN_FROM_CLIENT", &result)
+if err := client.QueryTwoBits("DEVICE_TOKEN_FROM_CLIENT", &result); err != nil {
+	// error handling
+	// Note that SDK returns ErrBitStateNotFound error if no bits found
+}
 ```
 
-### Update two bits
+#### Update two bits
 
 ```go
-import "github.com/snowman-mh/device-check-go"
-
-cred := devicecheck.NewCredentialFile("/path/to/private/key/file")
-cfg := devicecheck.NewConfig("ISSUER", "KEY_ID", devicecheck.Development)
-client := devicecheck.New(cred, cfg)
-
-err := client.UpdateTwoBits("DEVICE_TOKEN_FROM_CLIENT", true, true)
+if err := client.UpdateTwoBits("DEVICE_TOKEN_FROM_CLIENT", true, true); err != nil {
+	// error handling
+}
 ```
 
-### Validate device token
+#### Validate device token
 
 ```go
-import "github.com/snowman-mh/device-check-go"
-
-cred := devicecheck.NewCredentialFile("/path/to/private/key/file")
-cfg := devicecheck.NewConfig("ISSUER", "KEY_ID", devicecheck.Development)
-client := devicecheck.New(cred, cfg)
-
-err := client.ValidateDeviceToken("DEVICE_TOKEN_FROM_CLIENT")
+if err := client.ValidateDeviceToken("DEVICE_TOKEN_FROM_CLIENT"); err != nil {
+	// error handling
+}
 ```
 
 ## Apple documentation
