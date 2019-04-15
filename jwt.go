@@ -31,10 +31,10 @@ func (jwt jwt) generate(key *ecdsa.PrivateKey) (string, error) {
 		return "", err
 	}
 
-	headers := []func(*jose.JoseConfig){
-		jose.Header("alg", jose.ES256),
-		jose.Header("kid", jwt.keyID),
+	headers := map[string]interface{}{
+		"alg": jose.ES256,
+		"kid": jwt.keyID,
 	}
 
-	return jose.Sign(*(*string)(unsafe.Pointer(&claimsJSON)), jose.ES256, key, headers...)
+	return jose.Sign(*(*string)(unsafe.Pointer(&claimsJSON)), jose.ES256, key, jose.Headers(headers))
 }
