@@ -4,9 +4,9 @@ import "net/http"
 
 // Client provides methods to use DeviceCheck API
 type Client struct {
-	api api
+	api  api
 	cred Credential
-	jwt jwt
+	jwt  jwt
 }
 
 // New returns a new DeviceCheck API client instance
