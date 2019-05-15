@@ -8,7 +8,7 @@ import (
 )
 
 func TestClient_ValidateDeviceToken_InvalidKey(t *testing.T) {
-	client := clientImpl{
+	client := &Client{
 		api:  newAPI(Development),
 		cred: NewCredentialFile("unknown_file.p8"),
 		jwt:  newJWT("issuer", "keyID"),
@@ -20,7 +20,7 @@ func TestClient_ValidateDeviceToken_InvalidKey(t *testing.T) {
 }
 
 func TestClient_ValidateDeviceToken_InvalidURL(t *testing.T) {
-	client := clientImpl{
+	client := &Client{
 		api: api{
 			client:  new(http.Client),
 			baseURL: "invalid url",
@@ -35,7 +35,7 @@ func TestClient_ValidateDeviceToken_InvalidURL(t *testing.T) {
 }
 
 func TestClient_ValidateDeviceToken_InvalidDeviceToken(t *testing.T) {
-	client := clientImpl{
+	client := &Client{
 		api:  newAPI(Development),
 		cred: NewCredentialFile("revoked_private_key.p8"),
 		jwt:  newJWT("issuer", "keyID"),

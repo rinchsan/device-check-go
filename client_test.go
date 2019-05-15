@@ -14,7 +14,7 @@ func TestNew(t *testing.T) {
 	env := Development
 	cfg := NewConfig(issuer, keyID, env)
 
-	client := New(cred, cfg).(clientImpl)
+	client := New(cred, cfg)
 
 	assert := assert.New(t)
 	assert.Equal(cred, client.cred)
@@ -32,7 +32,7 @@ func TestNewWithHTTPClient(t *testing.T) {
 	cfg := NewConfig(issuer, keyID, env)
 	httpClient := new(http.Client)
 
-	client := NewWithHTTPClient(httpClient, cred, cfg).(clientImpl)
+	client := NewWithHTTPClient(httpClient, cred, cfg)
 
 	assert := assert.New(t)
 	assert.Equal(cred, client.cred)

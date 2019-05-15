@@ -49,7 +49,7 @@ func (api api) queryTwoBits(deviceToken, jwt string) (int, []byte, error) {
 }
 
 // QueryTwoBits queries two bits for device token
-func (client clientImpl) QueryTwoBits(deviceToken string, result *QueryTwoBitsResult) error {
+func (client *Client) QueryTwoBits(deviceToken string, result *QueryTwoBitsResult) error {
 	key, err := client.cred.key()
 	if err != nil {
 		return err

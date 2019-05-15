@@ -29,7 +29,7 @@ func (api api) updateTwoBits(deviceToken, jwt string, bit0, bit1 bool) (int, []b
 }
 
 // UpdateTwoBits updates two bits for device token
-func (client clientImpl) UpdateTwoBits(deviceToken string, bit0, bit1 bool) error {
+func (client *Client) UpdateTwoBits(deviceToken string, bit0, bit1 bool) error {
 	key, err := client.cred.key()
 	if err != nil {
 		return err
