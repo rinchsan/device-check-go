@@ -1,8 +1,8 @@
-module github.com/snowman-mh/device-check-go
+module github.com/rinchsan/device-check-go
+
+go 1.15
 
 require (
-	github.com/dvsekhvalnov/jose2go v0.0.0-20180829124132-7f401d37b68a
-	github.com/google/uuid v1.1.1
-	github.com/pkg/errors v0.8.1
-	github.com/stretchr/testify v1.3.0
+	github.com/dvsekhvalnov/jose2go v0.0.0-20201001154944-b09cfaf05951
+	github.com/google/uuid v1.1.2
 )

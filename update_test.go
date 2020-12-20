@@ -3,45 +3,50 @@ package devicecheck
 import (
 	"net/http"
 	"testing"
-
-	"github.com/stretchr/testify/assert"
 )
 
-func TestClient_UpdateTwoBits_InvalidKey(t *testing.T) {
-	client := &Client{
-		api:  newAPI(Development),
-		cred: NewCredentialFile("unknown_file.p8"),
-		jwt:  newJWT("issuer", "keyID"),
-	}
+func TestClient_UpdateTwoBits(t *testing.T) {
+	t.Parallel()
 
-	err := client.UpdateTwoBits("device_token", true, true)
-
-	assert.NotNil(t, err)
-}
-
-func TestClient_UpdateTwoBits_InvalidURL(t *testing.T) {
-	client := &Client{
-		api: api{
-			client:  new(http.Client),
-			baseURL: "invalid url",
+	cases := map[string]struct {
+		client Client
+	}{
+		"invalid key": {
+			client: Client{
+				api:  newAPI(Development),
+				cred: NewCredentialFile("unknown_file.p8"),
+				jwt:  newJWT("issuer", "keyID"),
+			},
 		},
-		cred: NewCredentialFile("revoked_private_key.p8"),
-		jwt:  newJWT("issuer", "keyID"),
+		"invalid url": {
+			client: Client{
+				api: api{
+					client:  new(http.Client),
+					baseURL: "invalid url",
+				},
+				cred: NewCredentialFile("revoked_private_key.p8"),
+				jwt:  newJWT("issuer", "keyID"),
+			},
+		},
+		"invalid device token": {
+			client: Client{
+				api:  newAPI(Development),
+				cred: NewCredentialFile("revoked_private_key.p8"),
+				jwt:  newJWT("issuer", "keyID"),
+			},
+		},
 	}
 
-	err := client.UpdateTwoBits("device_token", true, true)
+	for name, c := range cases {
+		c := c
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
 
-	assert.NotNil(t, err)
-}
+			err := c.client.UpdateTwoBits("device_token", true, true)
 
-func TestClient_UpdateTwoBits_InvalidDeviceToken(t *testing.T) {
-	client := &Client{
-		api:  newAPI(Development),
-		cred: NewCredentialFile("revoked_private_key.p8"),
-		jwt:  newJWT("issuer", "keyID"),
+			if err == nil {
+				t.Error("want 'not nil', got 'nil'")
+			}
+		})
 	}
-
-	err := client.UpdateTwoBits("device_token", true, true)
-
-	assert.NotNil(t, err)
 }

@@ -1,78 +1,119 @@
 package devicecheck
 
 import (
-	"fmt"
 	"net/http"
+	"reflect"
 	"testing"
 	"time"
-
-	"github.com/stretchr/testify/assert"
 )
 
 func TestTime_MarshalJSON(t *testing.T) {
-	year := 2019
-	month := time.April
-	testTime := dcTime{time.Date(year, month, 1, 0, 0, 0, 0, time.UTC)}
+	t.Parallel()
 
-	b, err := testTime.MarshalJSON()
+	cases := map[string]struct {
+		year  int
+		month time.Month
+		want  string
+	}{
+		"2019-04": {
+			year:  2019,
+			month: time.April,
+			want:  `"2019-04"`,
+		},
+	}
 
-	assert := assert.New(t)
-	assert.Nil(err)
-	assert.Equal(fmt.Sprintf(`"%04d-%02d"`, year, month), string(b))
+	for name, c := range cases {
+		c := c
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+
+			tm := Time{Time: time.Date(c.year, c.month, 1, 0, 0, 0, 0, time.UTC)}
+			got, err := tm.MarshalJSON()
+
+			if err != nil {
+				t.Errorf("want 'nil', got '%+v'", err)
+			}
+			if !reflect.DeepEqual(string(got), c.want) {
+				t.Errorf("want '%+v', got '%+v'", c.want, string(got))
+			}
+		})
+	}
 }
 
 func TestTime_UnmarshalJSON(t *testing.T) {
-	year := 2019
-	month := time.April
-	b, err := dcTime{time.Date(year, month, 1, 0, 0, 0, 0, time.UTC)}.MarshalJSON()
-	assert.Nil(t, err)
+	t.Parallel()
 
-	testTime := dcTime{}
-	err = testTime.UnmarshalJSON(b)
-	assert := assert.New(t)
-	assert.Nil(err)
-	assert.Equal(year, testTime.Year())
-	assert.Equal(month, testTime.Month())
-}
-
-func TestClient_QueryTwoBits_InvalidKey(t *testing.T) {
-	client := &Client{
-		api:  newAPI(Development),
-		cred: NewCredentialFile("unknown_file.p8"),
-		jwt:  newJWT("issuer", "keyID"),
-	}
-
-	result := QueryTwoBitsResult{}
-	err := client.QueryTwoBits("device_token", &result)
-
-	assert.NotNil(t, err)
-}
-
-func TestClient_QueryTwoBits_InvalidURL(t *testing.T) {
-	client := &Client{
-		api: api{
-			client:  new(http.Client),
-			baseURL: "invalid url",
+	cases := map[string]struct {
+		b    []byte
+		want Time
+	}{
+		"2019-04": {
+			b:    []byte("2019-04"),
+			want: Time{Time: time.Date(2019, time.April, 1, 0, 0, 0, 0, time.UTC)},
 		},
-		cred: NewCredentialFile("revoked_private_key.p8"),
-		jwt:  newJWT("issuer", "keyID"),
 	}
 
-	result := QueryTwoBitsResult{}
-	err := client.QueryTwoBits("device_token", &result)
+	for name, c := range cases {
+		c := c
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
 
-	assert.NotNil(t, err)
+			var got Time
+			err := got.UnmarshalJSON(c.b)
+
+			if err != nil {
+				t.Errorf("want 'nil', got '%+v'", err)
+			}
+			if !reflect.DeepEqual(got, c.want) {
+				t.Errorf("want '%+v', got '%+v'", c.want, got)
+			}
+		})
+	}
 }
 
-func TestClient_QueryTwoBits_InvalidDeviceToken(t *testing.T) {
-	client := &Client{
-		api:  newAPI(Development),
-		cred: NewCredentialFile("revoked_private_key.p8"),
-		jwt:  newJWT("issuer", "keyID"),
+func TestClient_QueryTwoBits(t *testing.T) {
+	t.Parallel()
+
+	cases := map[string]struct {
+		client Client
+	}{
+		"invalid key": {
+			client: Client{
+				api:  newAPI(Development),
+				cred: NewCredentialFile("unknown_file.p8"),
+				jwt:  newJWT("issuer", "keyID"),
+			},
+		},
+		"invalid url": {
+			client: Client{
+				api: api{
+					client:  new(http.Client),
+					baseURL: "invalid url",
+				},
+				cred: NewCredentialFile("revoked_private_key.p8"),
+				jwt:  newJWT("issuer", "keyID"),
+			},
+		},
+		"invalid device token": {
+			client: Client{
+				api:  newAPI(Development),
+				cred: NewCredentialFile("revoked_private_key.p8"),
+				jwt:  newJWT("issuer", "keyID"),
+			},
+		},
 	}
 
-	result := QueryTwoBitsResult{}
-	err := client.QueryTwoBits("device_token", &result)
+	for name, c := range cases {
+		c := c
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
 
-	assert.NotNil(t, err)
+			var result QueryTwoBitsResult
+			err := c.client.QueryTwoBits("device_token", &result)
+
+			if err == nil {
+				t.Error("want 'not nil', got 'nil'")
+			}
+		})
+	}
 }

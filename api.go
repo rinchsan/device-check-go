@@ -2,9 +2,9 @@ package devicecheck
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 )
 
@@ -20,7 +20,7 @@ func newBaseURL(env Environment) string {
 	case Production:
 		return productionBaseURL
 	default:
-		panic("no matching case")
+		return developmentBaseURL
 	}
 }
 
@@ -31,7 +31,7 @@ type api struct {
 
 func newAPI(env Environment) api {
 	return api{
-		client:  new(http.Client),
+		client:  http.DefaultClient,
 		baseURL: newBaseURL(env),
 	}
 }
@@ -43,28 +43,21 @@ func newAPIWithHTTPClient(client *http.Client, env Environment) api {
 	}
 }
 
-func (api api) do(jwt, path string, requestBody interface{}) (int, []byte, error) {
+func (api api) do(jwt, path string, requestBody interface{}) (*http.Response, error) {
 	buf := new(bytes.Buffer)
 	if err := json.NewEncoder(buf).Encode(requestBody); err != nil {
-		return http.StatusInternalServerError, nil, err
+		return nil, fmt.Errorf("json: %w", err)
 	}
 
-	req, err := http.NewRequest(http.MethodPost, api.baseURL+path, buf)
+	req, err := http.NewRequestWithContext(context.Background(), http.MethodPost, api.baseURL+path, buf)
 	if err != nil {
-		return http.StatusInternalServerError, nil, err
+		return nil, fmt.Errorf("http: %w", err)
 	}
+
 	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", jwt))
 
-	resp, err := api.client.Do(req)
-	if err != nil {
-		return http.StatusInternalServerError, nil, err
-	}
-	defer resp.Body.Close()
+	userAgent := fmt.Sprintf("device-check-go/%s (+https://github.com/rinchsan/device-check-go)", version)
+	req.Header.Set("User-Agent", userAgent)
 
-	responseBody, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return http.StatusInternalServerError, nil, err
-	}
-
-	return resp.StatusCode, responseBody, nil
+	return api.client.Do(req)
 }

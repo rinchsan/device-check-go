@@ -2,43 +2,126 @@ package devicecheck
 
 import (
 	"net/http"
+	"reflect"
 	"testing"
-
-	"github.com/stretchr/testify/assert"
 )
 
 func TestNew(t *testing.T) {
-	cred := NewCredentialFile("revoked_private_key.p8")
-	issuer := "issuer"
-	keyID := "keyID"
-	env := Development
-	cfg := NewConfig(issuer, keyID, env)
+	t.Parallel()
 
-	client := New(cred, cfg)
+	cases := map[string]struct {
+		cred Credential
+		cfg  Config
+		want *Client
+	}{
+		"development": {
+			cred: NewCredentialFile("revoked_private_key.p8"),
+			cfg:  NewConfig("issuer", "keyID", Development),
+			want: &Client{
+				api: api{
+					client:  http.DefaultClient,
+					baseURL: "https://api.development.devicecheck.apple.com/v1",
+				},
+				cred: credentialFile{
+					filename: "revoked_private_key.p8",
+				},
+				jwt: jwt{
+					issuer: "issuer",
+					keyID:  "keyID",
+				},
+			},
+		},
+		"production": {
+			cred: NewCredentialFile("revoked_private_key.p8"),
+			cfg:  NewConfig("issuer", "keyID", Production),
+			want: &Client{
+				api: api{
+					client:  http.DefaultClient,
+					baseURL: "https://api.devicecheck.apple.com/v1",
+				},
+				cred: credentialFile{
+					filename: "revoked_private_key.p8",
+				},
+				jwt: jwt{
+					issuer: "issuer",
+					keyID:  "keyID",
+				},
+			},
+		},
+	}
 
-	assert := assert.New(t)
-	assert.Equal(cred, client.cred)
-	assert.Equal(issuer, client.jwt.issuer)
-	assert.Equal(keyID, client.jwt.keyID)
-	assert.Equal(newBaseURL(env), client.api.baseURL)
-	assert.NotNil(client.api.client)
+	for name, c := range cases {
+		c := c
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+
+			got := New(c.cred, c.cfg)
+
+			if !reflect.DeepEqual(got, c.want) {
+				t.Errorf("want '%+v', got '%+v'", c.want, got)
+			}
+		})
+	}
 }
 
 func TestNewWithHTTPClient(t *testing.T) {
-	cred := NewCredentialFile("revoked_private_key.p8")
-	issuer := "issuer"
-	keyID := "keyID"
-	env := Production
-	cfg := NewConfig(issuer, keyID, env)
-	httpClient := new(http.Client)
+	t.Parallel()
 
-	client := NewWithHTTPClient(httpClient, cred, cfg)
+	client := new(http.Client)
+	cases := map[string]struct {
+		client *http.Client
+		cred   Credential
+		cfg    Config
+		want   *Client
+	}{
+		"development": {
+			client: client,
+			cred:   NewCredentialFile("revoked_private_key.p8"),
+			cfg:    NewConfig("issuer", "keyID", Development),
+			want: &Client{
+				api: api{
+					client:  client,
+					baseURL: "https://api.development.devicecheck.apple.com/v1",
+				},
+				cred: credentialFile{
+					filename: "revoked_private_key.p8",
+				},
+				jwt: jwt{
+					issuer: "issuer",
+					keyID:  "keyID",
+				},
+			},
+		},
+		"production": {
+			client: client,
+			cred:   NewCredentialFile("revoked_private_key.p8"),
+			cfg:    NewConfig("issuer", "keyID", Production),
+			want: &Client{
+				api: api{
+					client:  client,
+					baseURL: "https://api.devicecheck.apple.com/v1",
+				},
+				cred: credentialFile{
+					filename: "revoked_private_key.p8",
+				},
+				jwt: jwt{
+					issuer: "issuer",
+					keyID:  "keyID",
+				},
+			},
+		},
+	}
 
-	assert := assert.New(t)
-	assert.Equal(cred, client.cred)
-	assert.Equal(issuer, client.jwt.issuer)
-	assert.Equal(keyID, client.jwt.keyID)
-	assert.Equal(newBaseURL(env), client.api.baseURL)
-	assert.NotNil(client.api.client)
-	assert.Equal(httpClient, client.api.client)
+	for name, c := range cases {
+		c := c
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+
+			got := NewWithHTTPClient(c.client, c.cred, c.cfg)
+
+			if !reflect.DeepEqual(got, c.want) {
+				t.Errorf("want '%+v', got '%+v'", c.want, got)
+			}
+		})
+	}
 }

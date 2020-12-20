@@ -1,25 +1,51 @@
 package devicecheck
 
 import (
+	"reflect"
 	"testing"
-
-	"github.com/stretchr/testify/assert"
 )
 
 func TestNewConfig(t *testing.T) {
-	issuer := "issuer"
-	keyID := "keyID"
+	t.Parallel()
 
-	cfg := NewConfig(issuer, keyID, Development)
+	cases := map[string]struct {
+		issuer string
+		keyID  string
+		env    Environment
+		want   Config
+	}{
+		"development": {
+			issuer: "issuer",
+			keyID:  "keyID",
+			env:    Development,
+			want: Config{
+				env:    Development,
+				issuer: "issuer",
+				keyID:  "keyID",
+			},
+		},
+		"production": {
+			issuer: "issuer",
+			keyID:  "keyID",
+			env:    Production,
+			want: Config{
+				env:    Production,
+				issuer: "issuer",
+				keyID:  "keyID",
+			},
+		},
+	}
 
-	assert := assert.New(t)
-	assert.Equal(issuer, cfg.issuer)
-	assert.Equal(keyID, cfg.keyID)
-	assert.Equal(Development, cfg.env)
+	for name, c := range cases {
+		c := c
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
 
-	cfg = NewConfig(issuer, keyID, Production)
+			got := NewConfig(c.issuer, c.keyID, c.env)
 
-	assert.Equal(issuer, cfg.issuer)
-	assert.Equal(keyID, cfg.keyID)
-	assert.Equal(Production, cfg.env)
+			if !reflect.DeepEqual(got, c.want) {
+				t.Errorf("want '%+v', got '%+v'", c.want, got)
+			}
+		})
+	}
 }

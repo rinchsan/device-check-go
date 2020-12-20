@@ -2,44 +2,61 @@ package devicecheck
 
 import (
 	"net/http"
+	"reflect"
 	"testing"
-
-	"github.com/stretchr/testify/assert"
 )
 
-func Test_newError_nil(t *testing.T) {
-	assert.Nil(t, newError(http.StatusOK, nil))
-}
+func Test_newError(t *testing.T) {
+	t.Parallel()
 
-func Test_newError_Unknown(t *testing.T) {
-	body := "test_body"
-	assert.Contains(t, newError(http.StatusInternalServerError, []byte(body)).Error(), body)
-}
+	cases := map[string]struct {
+		code int
+		want error
+	}{
+		"bad request": {
+			code: http.StatusBadRequest,
+			want: ErrBadRequest,
+		},
+		"unauthorized": {
+			code: http.StatusUnauthorized,
+			want: ErrUnauthorized,
+		},
+		"forbidden": {
+			code: http.StatusForbidden,
+			want: ErrForbidden,
+		},
+		"method not allowed": {
+			code: http.StatusMethodNotAllowed,
+			want: ErrMethodNotAllowed,
+		},
+		"too many requests": {
+			code: http.StatusTooManyRequests,
+			want: ErrTooManyRequests,
+		},
+		"server error": {
+			code: http.StatusInternalServerError,
+			want: ErrServer,
+		},
+		"service unavailable": {
+			code: http.StatusServiceUnavailable,
+			want: ErrServiceUnavailable,
+		},
+		"unknown": {
+			code: http.StatusBadGateway,
+			want: ErrUnknown,
+		},
+	}
 
-func Test_newError_UnknownNoBody(t *testing.T) {
-	assert.Contains(t, newError(http.StatusInternalServerError, nil).Error(), "Unknown error")
-}
+	for name, c := range cases {
+		c := c
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
 
-func Test_newError_ErrBitStateNotFound(t *testing.T) {
-	assert.Equal(t, ErrBitStateNotFound, newError(http.StatusOK, []byte("Failed to find bit state")))
-}
+			got := newError(c.code)
 
-func Test_newError_ErrBadDeviceToken(t *testing.T) {
-	assert.Equal(t, ErrBadDeviceToken, newError(http.StatusOK, []byte("Missing or incorrectly formatted device token payload")))
-}
-
-func Test_newError_ErrBadBits(t *testing.T) {
-	assert.Equal(t, ErrBadBits, newError(http.StatusOK, []byte("Missing or incorrectly formatted bits")))
-}
-
-func Test_newError_ErrBadTimestamp(t *testing.T) {
-	assert.Equal(t, ErrBadTimestamp, newError(http.StatusOK, []byte("Missing or incorrectly formatted time stamp")))
-}
-
-func Test_newError_ErrInvalidAuthorizationToken(t *testing.T) {
-	assert.Equal(t, ErrInvalidAuthorizationToken, newError(http.StatusOK, []byte("Unable to verify authorization token")))
-}
-
-func Test_newError_ErrMethodNotAllowed(t *testing.T) {
-	assert.Equal(t, ErrMethodNotAllowed, newError(http.StatusOK, []byte("Method Not Allowed")))
+			if !reflect.DeepEqual(got, c.want) {
+				t.Errorf("want '%+v', got '%+v'", c.want, got)
+			}
+		})
+	}
 }
