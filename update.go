@@ -1,6 +1,8 @@
 package devicecheck
 
 import (
+	"fmt"
+	"net/http"
 	"time"
 
 	"github.com/google/uuid"
@@ -16,8 +18,19 @@ type updateTwoBitsRequestBody struct {
 	Bit1          bool   `json:"bit1"`
 }
 
-func (api api) updateTwoBits(deviceToken, jwt string, bit0, bit1 bool) (int, []byte, error) {
-	b := updateTwoBitsRequestBody{
+// UpdateTwoBits updates two bits for device token.
+func (client *Client) UpdateTwoBits(deviceToken string, bit0, bit1 bool) error {
+	key, err := client.cred.key()
+	if err != nil {
+		return fmt.Errorf("devicecheck: failed to create key: %w", err)
+	}
+
+	jwt, err := client.jwt.generate(key)
+	if err != nil {
+		return fmt.Errorf("devicecheck: failed to generate jwt: %w", err)
+	}
+
+	body := updateTwoBitsRequestBody{
 		DeviceToken:   deviceToken,
 		TransactionID: uuid.New().String(),
 		Timestamp:     time.Now().UTC().UnixNano() / int64(time.Millisecond),
@@ -25,25 +38,15 @@ func (api api) updateTwoBits(deviceToken, jwt string, bit0, bit1 bool) (int, []b
 		Bit1:          bit1,
 	}
 
-	return api.do(jwt, updateTwoBitsPath, b)
-}
-
-// UpdateTwoBits updates two bits for device token
-func (client *Client) UpdateTwoBits(deviceToken string, bit0, bit1 bool) error {
-	key, err := client.cred.key()
+	resp, err := client.api.do(jwt, updateTwoBitsPath, body)
 	if err != nil {
-		return err
+		return fmt.Errorf("devicecheck: failed to update two bits: %w", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("divececheck: %w", newError(resp.StatusCode))
 	}
 
-	jwt, err := client.jwt.generate(key)
-	if err != nil {
-		return err
-	}
-
-	code, body, err := client.api.updateTwoBits(deviceToken, jwt, bit0, bit1)
-	if err != nil {
-		return err
-	}
-
-	return newError(code, body)
+	return nil
 }

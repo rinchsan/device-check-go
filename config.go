@@ -1,23 +1,23 @@
 package devicecheck
 
-// Environment specifies base URL for DeviceCheck API
+// Environment specifies DeviceCheck API environment.
 type Environment int
 
 const (
-	// Development Environment
+	// Development specifies Apple's development environment.
 	Development Environment = iota + 1
-	// Production Environment
+	// Production specifies Apple's production environment.
 	Production
 )
 
-// Config provides configuration for DeviceCheck API
+// Config provides configuration for DeviceCheck API.
 type Config struct {
 	env    Environment
 	issuer string
 	keyID  string
 }
 
-// NewConfig returns a new configuration instance
+// NewConfig returns a new configuration.
 func NewConfig(issuer, keyID string, env Environment) Config {
 	return Config{
 		env:    env,

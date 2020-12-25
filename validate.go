@@ -1,6 +1,8 @@
 package devicecheck
 
 import (
+	"fmt"
+	"net/http"
 	"time"
 
 	"github.com/google/uuid"
@@ -14,32 +16,33 @@ type validateDeviceTokenRequestBody struct {
 	Timestamp     int64  `json:"timestamp"`
 }
 
-func (api api) validateDeviceToken(deviceToken, jwt string) (int, []byte, error) {
-	b := validateDeviceTokenRequestBody{
+// ValidateDeviceToken validates a device for device token.
+func (client *Client) ValidateDeviceToken(deviceToken string) error {
+	key, err := client.cred.key()
+	if err != nil {
+		return fmt.Errorf("devicecheck: failed to create key: %w", err)
+	}
+
+	jwt, err := client.jwt.generate(key)
+	if err != nil {
+		return fmt.Errorf("devicecheck: failed to generate jwt: %w", err)
+	}
+
+	body := validateDeviceTokenRequestBody{
 		DeviceToken:   deviceToken,
 		TransactionID: uuid.New().String(),
 		Timestamp:     time.Now().UTC().UnixNano() / int64(time.Millisecond),
 	}
 
-	return api.do(jwt, validateDeviceTokenPath, b)
-}
-
-// ValidateDeviceToken validates a device for device token
-func (client *Client) ValidateDeviceToken(deviceToken string) error {
-	key, err := client.cred.key()
+	resp, err := client.api.do(jwt, validateDeviceTokenPath, body)
 	if err != nil {
-		return err
+		return fmt.Errorf("devicecheck: failed to validate device token: %w", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("devicecheck: %w", newError(resp.StatusCode))
 	}
 
-	jwt, err := client.jwt.generate(key)
-	if err != nil {
-		return err
-	}
-
-	code, body, err := client.api.validateDeviceToken(deviceToken, jwt)
-	if err != nil {
-		return err
-	}
-
-	return newError(code, body)
+	return nil
 }

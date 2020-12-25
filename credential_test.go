@@ -2,80 +2,233 @@ package devicecheck
 
 import (
 	"io/ioutil"
+	"reflect"
 	"testing"
-	"unsafe"
-
-	"github.com/stretchr/testify/assert"
 )
 
 func TestNewCredentialFile(t *testing.T) {
-	filename := "revoked_private_key.p8"
+	t.Parallel()
 
-	cred := NewCredentialFile(filename).(credentialFile)
+	cases := map[string]struct {
+		filename string
+		want     credentialFile
+	}{
+		"valid filename": {
+			filename: "revoked_private_key.p8",
+			want: credentialFile{
+				filename: "revoked_private_key.p8",
+			},
+		},
+	}
 
-	assert.Equal(t, filename, cred.filename)
+	for name, c := range cases {
+		c := c
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+
+			got := NewCredentialFile(c.filename)
+
+			if !reflect.DeepEqual(got, c.want) {
+				t.Errorf("want '%+v', got '%+v'", c.want, got)
+			}
+		})
+	}
 }
 
 func TestCredentialFile_key(t *testing.T) {
-	cred := NewCredentialFile("revoked_private_key.p8")
+	t.Parallel()
 
-	key, err := cred.key()
+	cases := map[string]struct {
+		cred  credentialFile
+		noErr bool
+	}{
+		"valid credential": {
+			cred: credentialFile{
+				filename: "revoked_private_key.p8",
+			},
+			noErr: true,
+		},
+		"invalid credential": {
+			cred: credentialFile{
+				filename: "credential_test.go",
+			},
+			noErr: false,
+		},
+		"unknown filename": {
+			cred: credentialFile{
+				filename: "unknown_file.p8",
+			},
+			noErr: false,
+		},
+	}
 
-	assert := assert.New(t)
-	assert.NotNil(key)
-	assert.Nil(err)
-}
+	for name, c := range cases {
+		c := c
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
 
-func TestCredentialFile_key_UnknownFile(t *testing.T) {
-	cred := NewCredentialFile("unknown_file.p8")
+			key, err := c.cred.key()
 
-	key, err := cred.key()
-
-	assert := assert.New(t)
-	assert.Nil(key)
-	assert.NotNil(err)
+			if c.noErr {
+				if err != nil {
+					t.Errorf("want 'nil', got '%+v'", err)
+				}
+				if key == nil {
+					t.Error("want 'not nil', got 'nil'")
+				}
+			} else {
+				if err == nil {
+					t.Error("want 'not nil', got 'nil'")
+				}
+				if key != nil {
+					t.Errorf("want 'nil', got '%+v'", key)
+				}
+			}
+		})
+	}
 }
 
 func TestNewCredentialBytes(t *testing.T) {
-	raw, err := ioutil.ReadFile("revoked_private_key.p8")
-	assert.Nil(t, err)
+	t.Parallel()
 
-	cred := NewCredentialBytes(raw).(credentialBytes)
+	cases := map[string]struct {
+		filename string
+	}{
+		"valid filename": {
+			filename: "revoked_private_key.p8",
+		},
+	}
 
-	assert.Equal(t, raw, cred.raw)
+	for name, c := range cases {
+		c := c
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+
+			raw, err := ioutil.ReadFile(c.filename)
+			if err != nil {
+				t.Errorf("want 'nil', got '%+v'", err)
+			}
+
+			got := NewCredentialBytes(raw)
+			want := credentialBytes{raw: raw}
+
+			if !reflect.DeepEqual(got, want) {
+				t.Errorf("want '%+v', got '%+v'", want, got)
+			}
+		})
+	}
 }
 
 func TestCredentialBytes_key(t *testing.T) {
-	raw, err := ioutil.ReadFile("revoked_private_key.p8")
-	assert.Nil(t, err)
-	cred := NewCredentialBytes(raw)
+	t.Parallel()
 
-	key, err := cred.key()
+	cases := map[string]struct {
+		filename string
+	}{
+		"valid filename": {
+			filename: "revoked_private_key.p8",
+		},
+	}
 
-	assert := assert.New(t)
-	assert.NotNil(key)
-	assert.Nil(err)
+	for name, c := range cases {
+		c := c
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+
+			raw, err := ioutil.ReadFile(c.filename)
+			if err != nil {
+				t.Errorf("want 'nil', got '%+v'", err)
+			}
+
+			cred := NewCredentialBytes(raw)
+			key, err := cred.key()
+
+			if err != nil {
+				t.Errorf("want 'nil', got '%+v'", err)
+			}
+			if key == nil {
+				t.Error("want 'not nil', got 'nil'")
+			}
+		})
+	}
 }
 
 func TestNewCredentialString(t *testing.T) {
-	raw, err := ioutil.ReadFile("revoked_private_key.p8")
-	assert.Nil(t, err)
-	str := *(*string)(unsafe.Pointer(&raw))
+	t.Parallel()
 
-	cred := NewCredentialString(str).(credentialString)
+	cases := map[string]struct {
+		filename string
+	}{
+		"valid filename": {
+			filename: "revoked_private_key.p8",
+		},
+	}
 
-	assert.Equal(t, str, cred.str)
+	for name, c := range cases {
+		c := c
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+
+			raw, err := ioutil.ReadFile(c.filename)
+			if err != nil {
+				t.Errorf("want 'nil', got '%+v'", err)
+			}
+
+			got := NewCredentialString(string(raw))
+			want := credentialString{str: string(raw)}
+
+			if !reflect.DeepEqual(got, want) {
+				t.Errorf("want '%+v', got '%+v'", want, got)
+			}
+		})
+	}
 }
 
 func TestCredentialString_key(t *testing.T) {
-	raw, err := ioutil.ReadFile("revoked_private_key.p8")
-	assert.Nil(t, err)
-	str := *(*string)(unsafe.Pointer(&raw))
-	cred := NewCredentialString(str)
+	t.Parallel()
 
-	key, err := cred.key()
+	cases := map[string]struct {
+		filename string
+		noErr    bool
+	}{
+		"valid credential": {
+			filename: "revoked_private_key.p8",
+			noErr:    true,
+		},
+		"invalid credential": {
+			filename: "credential_test.go",
+			noErr:    false,
+		},
+	}
 
-	assert := assert.New(t)
-	assert.NotNil(key)
-	assert.Nil(err)
+	for name, c := range cases {
+		c := c
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+
+			raw, err := ioutil.ReadFile(c.filename)
+			if err != nil {
+				t.Errorf("want 'nil', got '%+v'", err)
+			}
+
+			cred := NewCredentialString(string(raw))
+			key, err := cred.key()
+
+			if c.noErr {
+				if err != nil {
+					t.Errorf("want 'nil', got '%+v'", err)
+				}
+				if key == nil {
+					t.Error("want 'not nil', got 'nil'")
+				}
+			} else {
+				if err == nil {
+					t.Error("want 'not nil', got 'nil'")
+				}
+				if key != nil {
+					t.Errorf("want 'nil', got '%+v'", key)
+				}
+			}
+		})
+	}
 }

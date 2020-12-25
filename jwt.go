@@ -3,8 +3,8 @@ package devicecheck
 import (
 	"crypto/ecdsa"
 	"encoding/json"
+	"fmt"
 	"time"
-	"unsafe"
 
 	jose "github.com/dvsekhvalnov/jose2go"
 )
@@ -26,9 +26,10 @@ func (jwt jwt) generate(key *ecdsa.PrivateKey) (string, error) {
 		"iss": jwt.issuer,
 		"iat": time.Now().UTC().Unix(),
 	}
+
 	claimsJSON, err := json.Marshal(claims)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("json: %w", err)
 	}
 
 	headers := map[string]interface{}{
@@ -36,5 +37,5 @@ func (jwt jwt) generate(key *ecdsa.PrivateKey) (string, error) {
 		"kid": jwt.keyID,
 	}
 
-	return jose.Sign(*(*string)(unsafe.Pointer(&claimsJSON)), jose.ES256, key, jose.Headers(headers))
+	return jose.Sign(string(claimsJSON), jose.ES256, key, jose.Headers(headers))
 }
