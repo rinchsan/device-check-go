@@ -55,9 +55,7 @@ func (api api) do(jwt, path string, requestBody interface{}) (*http.Response, er
 	}
 
 	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", jwt))
-
-	userAgent := fmt.Sprintf("device-check-go/%s (+https://github.com/rinchsan/device-check-go)", version)
-	req.Header.Set("User-Agent", userAgent)
+	req.Header.Set("User-Agent", "device-check-go (+https://github.com/rinchsan/device-check-go)")
 
 	return api.client.Do(req)
 }
