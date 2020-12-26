@@ -15,7 +15,7 @@ iOS DeviceCheck SDK for Go - query and modify the per-device bits
 go get github.com/rinchsan/device-check-go
 ```
 
-## Get started
+## Getting started
 
 ### Initialize SDK
 
