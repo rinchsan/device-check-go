@@ -53,8 +53,8 @@ jobs:
         with:
           go-version: 1.15.x
       - name: Generate coverage
-        run: go test ./... -coverprofile coverage.txt
+        run: go test ./... -cover -coverprofile coverage.out -covermode atomic
       - name: Upload coverage
         uses: codecov/codecov-action@v1
         with:
-          file: ./coverage.txt
+          file: ./coverage.out
