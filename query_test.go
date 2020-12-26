@@ -44,12 +44,19 @@ func TestTime_UnmarshalJSON(t *testing.T) {
 	t.Parallel()
 
 	cases := map[string]struct {
-		b    []byte
-		want Time
+		b     []byte
+		noErr bool
+		want  Time
 	}{
 		"2019-04": {
-			b:    []byte("2019-04"),
-			want: Time{Time: time.Date(2019, time.April, 1, 0, 0, 0, 0, time.UTC)},
+			b:     []byte("2019-04"),
+			noErr: true,
+			want:  Time{Time: time.Date(2019, time.April, 1, 0, 0, 0, 0, time.UTC)},
+		},
+		"invalid format": {
+			b:     []byte("2019-04-01"),
+			noErr: false,
+			want:  Time{},
 		},
 	}
 
@@ -61,8 +68,14 @@ func TestTime_UnmarshalJSON(t *testing.T) {
 			var got Time
 			err := got.UnmarshalJSON(c.b)
 
-			if err != nil {
-				t.Errorf("want 'nil', got '%+v'", err)
+			if c.noErr {
+				if err != nil {
+					t.Errorf("want 'nil', got '%+v'", err)
+				}
+			} else {
+				if err == nil {
+					t.Error("want 'not nil', got 'nil'")
+				}
 			}
 			if !reflect.DeepEqual(got, c.want) {
 				t.Errorf("want '%+v', got '%+v'", c.want, got)
