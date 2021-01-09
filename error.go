@@ -18,7 +18,7 @@ var (
 	ErrServer             = errors.New("server error")
 	ErrServiceUnavailable = errors.New("service unavailable")
 	ErrUnknown            = errors.New("unknown error")
-	ErrBitStateNotFound = errors.New("bit state not found")
+	ErrBitStateNotFound   = errors.New("bit state not found")
 )
 
 func newErrorForQuery(code int, body string) error {
