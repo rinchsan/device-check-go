@@ -7,7 +7,7 @@
 [![](https://goreportcard.com/badge/github.com/rinchsan/device-check-go)](https://goreportcard.com/report/github.com/rinchsan/device-check-go)
 [![](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](LICENSE)
 
-iOS DeviceCheck SDK for Go - query and modify the per-device bits
+:iphone: iOS DeviceCheck SDK for Go - query and modify the per-device bits
 
 ## Installation
 
