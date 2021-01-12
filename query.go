@@ -1,6 +1,7 @@
 package devicecheck
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -82,5 +83,5 @@ func (client *Client) QueryTwoBits(deviceToken string, result *QueryTwoBitsResul
 		return fmt.Errorf("devicecheck: %w", err)
 	}
 
-	return json.NewDecoder(resp.Body).Decode(result)
+	return json.NewDecoder(bytes.NewReader(respBody)).Decode(result)
 }
