@@ -6,7 +6,7 @@ import (
 )
 
 const (
-	bitStateNotFoundStr = "Bit State Not Found"
+	bitStateNotFoundStr = "Failed to find bit state"
 )
 
 var (
