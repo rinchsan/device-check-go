@@ -1,8 +1,10 @@
 package devicecheck
 
 import (
+	"io/ioutil"
 	"net/http"
 	"reflect"
+	"strings"
 	"testing"
 	"time"
 )
@@ -89,6 +91,7 @@ func TestClient_QueryTwoBits(t *testing.T) {
 
 	cases := map[string]struct {
 		client Client
+		noErr  bool
 	}{
 		"invalid key": {
 			client: Client{
@@ -96,6 +99,7 @@ func TestClient_QueryTwoBits(t *testing.T) {
 				cred: NewCredentialFile("unknown_file.p8"),
 				jwt:  newJWT("issuer", "keyID"),
 			},
+			noErr: false,
 		},
 		"invalid url": {
 			client: Client{
@@ -106,6 +110,7 @@ func TestClient_QueryTwoBits(t *testing.T) {
 				cred: NewCredentialFile("revoked_private_key.p8"),
 				jwt:  newJWT("issuer", "keyID"),
 			},
+			noErr: false,
 		},
 		"invalid device token": {
 			client: Client{
@@ -113,6 +118,29 @@ func TestClient_QueryTwoBits(t *testing.T) {
 				cred: NewCredentialFile("revoked_private_key.p8"),
 				jwt:  newJWT("issuer", "keyID"),
 			},
+			noErr: false,
+		},
+		"status ok with ErrBitStateNotFound": {
+			client: Client{
+				api: newAPIWithHTTPClient(newMockHTTPClient(&http.Response{
+					StatusCode: http.StatusOK,
+					Body:       ioutil.NopCloser(strings.NewReader("Failed to find bit state")),
+				}), Development),
+				cred: NewCredentialFile("revoked_private_key.p8"),
+				jwt:  newJWT("issuer", "keyID"),
+			},
+			noErr: false,
+		},
+		"status ok with valid response": {
+			client: Client{
+				api: newAPIWithHTTPClient(newMockHTTPClient(&http.Response{
+					StatusCode: http.StatusOK,
+					Body:       ioutil.NopCloser(strings.NewReader(`{"bit0":true,"bit1":false,"last_update_time":"2006-01"}`)),
+				}), Development),
+				cred: NewCredentialFile("revoked_private_key.p8"),
+				jwt:  newJWT("issuer", "keyID"),
+			},
+			noErr: true,
 		},
 	}
 
@@ -124,8 +152,14 @@ func TestClient_QueryTwoBits(t *testing.T) {
 			var result QueryTwoBitsResult
 			err := c.client.QueryTwoBits("device_token", &result)
 
-			if err == nil {
-				t.Error("want 'not nil', got 'nil'")
+			if c.noErr {
+				if err != nil {
+					t.Errorf("want 'nil', got '%+v'", err)
+				}
+			} else {
+				if err == nil {
+					t.Error("want 'not nil', got 'nil'")
+				}
 			}
 		})
 	}
