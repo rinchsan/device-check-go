@@ -3,7 +3,6 @@ package devicecheck
 import (
 	"crypto/ecdsa"
 	"encoding/json"
-	"fmt"
 	"time"
 
 	jose "github.com/dvsekhvalnov/jose2go"
@@ -27,10 +26,8 @@ func (jwt jwt) generate(key *ecdsa.PrivateKey) (string, error) {
 		"iat": time.Now().UTC().Unix(),
 	}
 
-	claimsJSON, err := json.Marshal(claims)
-	if err != nil {
-		return "", fmt.Errorf("json: %w", err)
-	}
+	// Ignoring error, because json.Marshal never fails.
+	claimsJSON, _ := json.Marshal(claims)
 
 	headers := map[string]interface{}{
 		"alg": jose.ES256,
