@@ -3,6 +3,7 @@ package devicecheck
 import (
 	"errors"
 	"net/http"
+	"strings"
 )
 
 const (
@@ -21,14 +22,8 @@ var (
 	ErrBitStateNotFound   = errors.New("bit state not found")
 )
 
-func newErrorForQuery(code int, body string) error {
-	if code != http.StatusOK {
-		return newError(code)
-	}
-	if body == bitStateNotFoundStr {
-		return ErrBitStateNotFound
-	}
-	return nil
+func isErrBitStateNotFound(body string) bool {
+	return strings.Contains(body, bitStateNotFoundStr)
 }
 
 func newError(code int) error {

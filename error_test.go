@@ -6,6 +6,37 @@ import (
 	"testing"
 )
 
+func Test_isErrBitStateNotFound(t *testing.T) {
+	t.Parallel()
+
+	cases := map[string]struct {
+		body string
+		want bool
+	}{
+		"is ErrBitStateNotFound": {
+			body: "Failed to find bit state",
+			want: true,
+		},
+		"is not ErrBitStateNotFound": {
+			body: "Missing or incorrectly formatted bits",
+			want: false,
+		},
+	}
+
+	for name, c := range cases {
+		c := c
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+
+			got := isErrBitStateNotFound(c.body)
+
+			if !reflect.DeepEqual(got, c.want) {
+				t.Errorf("want '%+v', got '%+v'", c.want, got)
+			}
+		})
+	}
+}
+
 func Test_newError(t *testing.T) {
 	t.Parallel()
 
