@@ -1,7 +1,9 @@
 package devicecheck
 
 import (
+	"io/ioutil"
 	"net/http"
+	"strings"
 	"testing"
 )
 
@@ -10,6 +12,7 @@ func TestClient_UpdateTwoBits(t *testing.T) {
 
 	cases := map[string]struct {
 		client Client
+		noErr  bool
 	}{
 		"invalid key": {
 			client: Client{
@@ -17,6 +20,7 @@ func TestClient_UpdateTwoBits(t *testing.T) {
 				cred: NewCredentialFile("unknown_file.p8"),
 				jwt:  newJWT("issuer", "keyID"),
 			},
+			noErr: false,
 		},
 		"invalid url": {
 			client: Client{
@@ -27,6 +31,7 @@ func TestClient_UpdateTwoBits(t *testing.T) {
 				cred: NewCredentialFile("revoked_private_key.p8"),
 				jwt:  newJWT("issuer", "keyID"),
 			},
+			noErr: false,
 		},
 		"invalid device token": {
 			client: Client{
@@ -34,6 +39,18 @@ func TestClient_UpdateTwoBits(t *testing.T) {
 				cred: NewCredentialFile("revoked_private_key.p8"),
 				jwt:  newJWT("issuer", "keyID"),
 			},
+			noErr: false,
+		},
+		"status ok": {
+			client: Client{
+				api: newAPIWithHTTPClient(newMockHTTPClient(&http.Response{
+					StatusCode: http.StatusOK,
+					Body:       ioutil.NopCloser(strings.NewReader("success")),
+				}), Development),
+				cred: NewCredentialFile("revoked_private_key.p8"),
+				jwt:  newJWT("issuer", "keyID"),
+			},
+			noErr: true,
 		},
 	}
 
@@ -44,8 +61,14 @@ func TestClient_UpdateTwoBits(t *testing.T) {
 
 			err := c.client.UpdateTwoBits("device_token", true, true)
 
-			if err == nil {
-				t.Error("want 'not nil', got 'nil'")
+			if c.noErr {
+				if err != nil {
+					t.Errorf("want 'nil', got '%+v'", err)
+				}
+			} else {
+				if err == nil {
+					t.Error("want 'not nil', got 'nil'")
+				}
 			}
 		})
 	}

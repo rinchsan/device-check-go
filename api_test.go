@@ -198,3 +198,17 @@ func TestAPI_do(t *testing.T) {
 		})
 	}
 }
+
+type roundTripFunc func(req *http.Request) *http.Response
+
+func (f roundTripFunc) RoundTrip(req *http.Request) (*http.Response, error) {
+	return f(req), nil
+}
+
+func newMockHTTPClient(resp *http.Response) *http.Client {
+	return &http.Client{
+		Transport: roundTripFunc(func(r *http.Request) *http.Response {
+			return resp
+		}),
+	}
+}
