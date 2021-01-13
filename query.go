@@ -1,9 +1,10 @@
 package devicecheck
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
-	"net/http"
+	"io/ioutil"
 	"strings"
 	"time"
 
@@ -46,7 +47,7 @@ func (t *Time) UnmarshalJSON(b []byte) error {
 	return nil
 }
 
-// QueryTwoBits queries two bits for device token.
+// QueryTwoBits queries two bits for device token. Returns ErrBitStateNotFound if the bits have not been set.
 func (client *Client) QueryTwoBits(deviceToken string, result *QueryTwoBitsResult) error {
 	key, err := client.cred.key()
 	if err != nil {
@@ -70,9 +71,17 @@ func (client *Client) QueryTwoBits(deviceToken string, result *QueryTwoBitsResul
 	}
 	defer resp.Body.Close()
 
-	if resp.StatusCode != http.StatusOK {
-		return fmt.Errorf("devicecheck: %w", newError(resp.StatusCode))
+	respBody, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return err
+	}
+	err = newErrorForQuery(resp.StatusCode, string(respBody))
+	if err == ErrBitStateNotFound {
+		return err
+	}
+	if err != nil {
+		return fmt.Errorf("devicecheck: %w", err)
 	}
 
-	return json.NewDecoder(resp.Body).Decode(result)
+	return json.NewDecoder(bytes.NewReader(respBody)).Decode(result)
 }

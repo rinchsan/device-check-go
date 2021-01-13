@@ -5,6 +5,10 @@ import (
 	"net/http"
 )
 
+const (
+	bitStateNotFoundStr = "Failed to find bit state"
+)
+
 var (
 	ErrBadRequest         = errors.New("bad request")
 	ErrUnauthorized       = errors.New("invalid or expired token")
@@ -14,7 +18,18 @@ var (
 	ErrServer             = errors.New("server error")
 	ErrServiceUnavailable = errors.New("service unavailable")
 	ErrUnknown            = errors.New("unknown error")
+	ErrBitStateNotFound   = errors.New("bit state not found")
 )
+
+func newErrorForQuery(code int, body string) error {
+	if code != http.StatusOK {
+		return newError(code)
+	}
+	if body == bitStateNotFoundStr {
+		return ErrBitStateNotFound
+	}
+	return nil
+}
 
 func newError(code int) error {
 	switch code {
