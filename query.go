@@ -72,19 +72,19 @@ func (client *Client) QueryTwoBits(deviceToken string, result *QueryTwoBitsResul
 	}
 	defer resp.Body.Close()
 
+	respBody, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return fmt.Errorf("devicecheck: failed to read response body: %w", err)
+	}
+
 	switch resp.StatusCode {
 	case http.StatusOK:
-		respBody, err := ioutil.ReadAll(resp.Body)
-		if err != nil {
-			return fmt.Errorf("devicecheck: failed to read response body: %w", err)
-		}
-
 		if isErrBitStateNotFound(string(respBody)) {
-			return ErrBitStateNotFound
+			return fmt.Errorf("devicecheck: %w", ErrBitStateNotFound)
 		}
 
 		return json.NewDecoder(bytes.NewReader(respBody)).Decode(result)
 	default:
-		return fmt.Errorf("devicecheck: %w", newError(resp.StatusCode))
+		return fmt.Errorf("devicecheck: %w", newError(resp.StatusCode, string(respBody)))
 	}
 }

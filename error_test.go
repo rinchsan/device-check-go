@@ -1,6 +1,7 @@
 package devicecheck
 
 import (
+	"errors"
 	"net/http"
 	"reflect"
 	"testing"
@@ -83,10 +84,10 @@ func Test_newError(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 
-			got := newError(c.code)
+			got := newError(c.code, "body")
 
-			if !reflect.DeepEqual(got, c.want) {
-				t.Errorf("want '%+v', got '%+v'", c.want, got)
+			if !errors.Is(got, c.want) {
+				t.Error("got error does not wrap expected error")
 			}
 		})
 	}
