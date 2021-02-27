@@ -2,6 +2,7 @@ package devicecheck
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 	"strings"
 )
@@ -26,23 +27,23 @@ func isErrBitStateNotFound(body string) bool {
 	return strings.Contains(body, bitStateNotFoundStr)
 }
 
-func newError(code int) error {
+func newError(code int, body string) error {
 	switch code {
 	case http.StatusBadRequest:
-		return ErrBadRequest
+		return fmt.Errorf("%w: %s", ErrBadRequest, body)
 	case http.StatusUnauthorized:
-		return ErrUnauthorized
+		return fmt.Errorf("%w: %s", ErrUnauthorized, body)
 	case http.StatusForbidden:
-		return ErrForbidden
+		return fmt.Errorf("%w: %s", ErrForbidden, body)
 	case http.StatusMethodNotAllowed:
-		return ErrMethodNotAllowed
+		return fmt.Errorf("%w: %s", ErrMethodNotAllowed, body)
 	case http.StatusTooManyRequests:
-		return ErrTooManyRequests
+		return fmt.Errorf("%w: %s", ErrTooManyRequests, body)
 	case http.StatusInternalServerError:
-		return ErrServer
+		return fmt.Errorf("%w: %s", ErrServer, body)
 	case http.StatusServiceUnavailable:
-		return ErrServiceUnavailable
+		return fmt.Errorf("%w: %s", ErrServiceUnavailable, body)
 	default:
-		return ErrUnknown
+		return fmt.Errorf("%w: %s", ErrUnknown, body)
 	}
 }
