@@ -1,11 +1,13 @@
 package devicecheck
 
 import (
+	"errors"
 	"io/ioutil"
 	"net/http"
 	"reflect"
 	"strings"
 	"testing"
+	"testing/iotest"
 	"time"
 )
 
@@ -141,6 +143,17 @@ func TestClient_QueryTwoBits(t *testing.T) {
 				jwt:  newJWT("issuer", "keyID"),
 			},
 			noErr: true,
+		},
+		"status ok with invalid response": {
+			client: Client{
+				api: newAPIWithHTTPClient(newMockHTTPClient(&http.Response{
+					StatusCode: http.StatusOK,
+					Body:       ioutil.NopCloser(iotest.ErrReader(errors.New("io.Reader error"))),
+				}), Development),
+				cred: NewCredentialFile("revoked_private_key.p8"),
+				jwt:  newJWT("issuer", "keyID"),
+			},
+			noErr: false,
 		},
 	}
 
