@@ -36,7 +36,7 @@ client := devicecheck.New(cred, cfg)
 var result devicecheck.QueryTwoBitsResult
 if err := client.QueryTwoBits("DEVICE_TOKEN_FROM_CLIENT", &result); err != nil {
 	switch {
-	// Note that SDK returns ErrBitStateNotFound error if no bits found
+	// Note that QueryTwoBits returns ErrBitStateNotFound error if no bits found
 	case errors.Is(err, devicecheck.ErrBitStateNotFound):
 		// handle ErrBitStateNotFound error
 	default:
@@ -49,7 +49,7 @@ if err := client.QueryTwoBits("DEVICE_TOKEN_FROM_CLIENT", &result); err != nil {
 
 ```go
 if err := client.UpdateTwoBits("DEVICE_TOKEN_FROM_CLIENT", true, true); err != nil {
-	// error handling
+	// handle errors
 }
 ```
 
@@ -57,7 +57,7 @@ if err := client.UpdateTwoBits("DEVICE_TOKEN_FROM_CLIENT", true, true); err != n
 
 ```go
 if err := client.ValidateDeviceToken("DEVICE_TOKEN_FROM_CLIENT"); err != nil {
-	// error handling
+	// handle errors
 }
 ```
 
