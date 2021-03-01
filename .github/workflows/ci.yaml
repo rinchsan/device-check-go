@@ -19,7 +19,7 @@ jobs:
       - name: Run golangci-lint
         uses: golangci/golangci-lint-action@v2
         with:
-          version: v1.33
+          version: v1.37
       - name: Run gosec
         run: |
           go get github.com/securego/gosec/v2/cmd/gosec
