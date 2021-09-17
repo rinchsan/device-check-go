@@ -1,7 +1,7 @@
 package devicecheck
 
 import (
-	"io/ioutil"
+	"io"
 	"net/http"
 	"strings"
 	"testing"
@@ -45,7 +45,7 @@ func TestClient_UpdateTwoBits(t *testing.T) {
 			client: Client{
 				api: newAPIWithHTTPClient(newMockHTTPClient(&http.Response{
 					StatusCode: http.StatusOK,
-					Body:       ioutil.NopCloser(strings.NewReader("success")),
+					Body:       io.NopCloser(strings.NewReader("success")),
 				}), Development),
 				cred: NewCredentialFile("revoked_private_key.p8"),
 				jwt:  newJWT("issuer", "keyID"),

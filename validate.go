@@ -2,7 +2,7 @@ package devicecheck
 
 import (
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"time"
 
@@ -41,7 +41,7 @@ func (client *Client) ValidateDeviceToken(deviceToken string) error {
 	}
 	defer resp.Body.Close()
 
-	respBody, err := ioutil.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return fmt.Errorf("devicecheck: failed to read response body: %w", err)
 	}

@@ -1,7 +1,7 @@
 package devicecheck
 
 import (
-	"io/ioutil"
+	"io"
 	"net/http"
 	"reflect"
 	"strings"
@@ -124,7 +124,7 @@ func TestClient_QueryTwoBits(t *testing.T) {
 			client: Client{
 				api: newAPIWithHTTPClient(newMockHTTPClient(&http.Response{
 					StatusCode: http.StatusOK,
-					Body:       ioutil.NopCloser(strings.NewReader("Failed to find bit state")),
+					Body:       io.NopCloser(strings.NewReader("Failed to find bit state")),
 				}), Development),
 				cred: NewCredentialFile("revoked_private_key.p8"),
 				jwt:  newJWT("issuer", "keyID"),
@@ -135,7 +135,7 @@ func TestClient_QueryTwoBits(t *testing.T) {
 			client: Client{
 				api: newAPIWithHTTPClient(newMockHTTPClient(&http.Response{
 					StatusCode: http.StatusOK,
-					Body:       ioutil.NopCloser(strings.NewReader(`{"bit0":true,"bit1":false,"last_update_time":"2006-01"}`)),
+					Body:       io.NopCloser(strings.NewReader(`{"bit0":true,"bit1":false,"last_update_time":"2006-01"}`)),
 				}), Development),
 				cred: NewCredentialFile("revoked_private_key.p8"),
 				jwt:  newJWT("issuer", "keyID"),
