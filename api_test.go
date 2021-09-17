@@ -178,21 +178,27 @@ func TestAPI_do(t *testing.T) {
 				client:  http.DefaultClient,
 				baseURL: c.baseURL,
 			}
-			resp, err := api.do("jwt", c.path, c.body)
+			code, body, err := api.do("jwt", c.path, c.body)
 
 			if c.noErr {
 				if err != nil {
 					t.Errorf("want 'nil', got '%+v'", err)
 				}
-				if resp == nil {
-					t.Error("want 'not nil', got 'nil'")
+				if code != http.StatusOK {
+					t.Errorf("want '200', got '%d'", code)
+				}
+				if len(body) == 0 {
+					t.Error("want non-empty body, got empty")
 				}
 			} else {
 				if err == nil {
 					t.Error("want 'not nil', got 'nil'")
 				}
-				if resp != nil {
-					t.Error("want 'nil', got 'not nil'")
+				if code == http.StatusOK {
+					t.Errorf("want 'not 200', got '200'")
+				}
+				if len(body) != 0 {
+					t.Error("want empty body, got non-empty")
 				}
 			}
 		})
