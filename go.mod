@@ -1,6 +1,6 @@
 module github.com/rinchsan/device-check-go
 
-go 1.15
+go 1.16
 
 require (
 	github.com/dvsekhvalnov/jose2go v1.5.0
