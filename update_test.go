@@ -1,6 +1,7 @@
 package devicecheck
 
 import (
+	"context"
 	"io"
 	"net/http"
 	"strings"
@@ -59,7 +60,7 @@ func TestClient_UpdateTwoBits(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 
-			err := c.client.UpdateTwoBits("device_token", true, true)
+			err := c.client.UpdateTwoBits(context.Background(), "device_token", true, true)
 
 			if c.noErr {
 				if err != nil {

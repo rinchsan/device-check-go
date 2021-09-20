@@ -44,13 +44,13 @@ func newAPIWithHTTPClient(client *http.Client, env Environment) api {
 	}
 }
 
-func (api api) do(jwt, path string, requestBody interface{}) (int, string, error) {
+func (api api) do(ctx context.Context, jwt, path string, requestBody interface{}) (int, string, error) {
 	buf := new(bytes.Buffer)
 	if err := json.NewEncoder(buf).Encode(requestBody); err != nil {
 		return 0, "", fmt.Errorf("json: %w", err)
 	}
 
-	req, err := http.NewRequestWithContext(context.Background(), http.MethodPost, api.baseURL+path, buf)
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, api.baseURL+path, buf)
 	if err != nil {
 		return 0, "", fmt.Errorf("http: %w", err)
 	}

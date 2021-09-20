@@ -1,4 +1,4 @@
-module github.com/rinchsan/device-check-go
+module github.com/rinchsan/device-check-go/v2
 
 go 1.16
 

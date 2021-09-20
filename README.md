@@ -13,7 +13,7 @@
 ## Installation
 
 ```bash
-go get github.com/rinchsan/device-check-go
+go get github.com/rinchsan/device-check-go/v2
 ```
 
 ## Getting started
@@ -21,7 +21,7 @@ go get github.com/rinchsan/device-check-go
 ### Initialize SDK
 
 ```go
-import "github.com/rinchsan/device-check-go"
+import "github.com/rinchsan/device-check-go/v2"
 
 cred := devicecheck.NewCredentialFile("/path/to/private/key/file") // You can create credential also from raw string/bytes
 cfg := devicecheck.NewConfig("ISSUER", "KEY_ID", devicecheck.Development)
