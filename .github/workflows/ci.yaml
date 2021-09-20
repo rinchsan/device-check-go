@@ -21,9 +21,7 @@ jobs:
         with:
           version: v1.37
       - name: Run gosec
-        run: |
-          go get github.com/securego/gosec/v2/cmd/gosec
-          gosec ./...
+        run: go run github.com/securego/gosec/v2/cmd/gosec@latest ./...
 
   test:
     name: Test
