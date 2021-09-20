@@ -2,5 +2,12 @@ run:
   timeout: 1m
   tests: false
 
+linters-settings:
+  tagliatelle:
+    case:
+      use-field-name: true
+      rules:
+        json: snake
+
 linters:
   enable-all: true
