@@ -1,6 +1,7 @@
 package devicecheck
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -47,7 +48,7 @@ func (t *Time) UnmarshalJSON(b []byte) error {
 }
 
 // QueryTwoBits queries two bits for device token. Returns ErrBitStateNotFound if the bits have not been set.
-func (client *Client) QueryTwoBits(deviceToken string, result *QueryTwoBitsResult) error {
+func (client *Client) QueryTwoBits(ctx context.Context, deviceToken string, result *QueryTwoBitsResult) error {
 	key, err := client.cred.key()
 	if err != nil {
 		return fmt.Errorf("devicecheck: failed to create key: %w", err)
@@ -64,7 +65,7 @@ func (client *Client) QueryTwoBits(deviceToken string, result *QueryTwoBitsResul
 		Timestamp:     time.Now().UTC().UnixNano() / int64(time.Millisecond),
 	}
 
-	code, respBody, err := client.api.do(jwt, queryTwoBitsPath, body)
+	code, respBody, err := client.api.do(ctx, jwt, queryTwoBitsPath, body)
 	if err != nil {
 		return fmt.Errorf("devicecheck: failed to query two bits: %w", err)
 	}

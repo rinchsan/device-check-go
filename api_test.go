@@ -1,6 +1,7 @@
 package devicecheck
 
 import (
+	"context"
 	"net/http"
 	"reflect"
 	"testing"
@@ -178,7 +179,7 @@ func TestAPI_do(t *testing.T) {
 				client:  http.DefaultClient,
 				baseURL: c.baseURL,
 			}
-			code, body, err := api.do("jwt", c.path, c.body)
+			code, body, err := api.do(context.Background(), "jwt", c.path, c.body)
 
 			if c.noErr {
 				if err != nil {

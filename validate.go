@@ -1,6 +1,7 @@
 package devicecheck
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"time"
@@ -17,7 +18,7 @@ type validateDeviceTokenRequestBody struct {
 }
 
 // ValidateDeviceToken validates a device for device token.
-func (client *Client) ValidateDeviceToken(deviceToken string) error {
+func (client *Client) ValidateDeviceToken(ctx context.Context, deviceToken string) error {
 	key, err := client.cred.key()
 	if err != nil {
 		return fmt.Errorf("devicecheck: failed to create key: %w", err)
@@ -34,7 +35,7 @@ func (client *Client) ValidateDeviceToken(deviceToken string) error {
 		Timestamp:     time.Now().UTC().UnixNano() / int64(time.Millisecond),
 	}
 
-	code, respBody, err := client.api.do(jwt, validateDeviceTokenPath, body)
+	code, respBody, err := client.api.do(ctx, jwt, validateDeviceTokenPath, body)
 	if err != nil {
 		return fmt.Errorf("devicecheck: failed to validate device token: %w", err)
 	}

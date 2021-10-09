@@ -1,6 +1,7 @@
 package devicecheck
 
 import (
+	"context"
 	"errors"
 	"io"
 	"net/http"
@@ -163,7 +164,7 @@ func TestClient_QueryTwoBits(t *testing.T) {
 			t.Parallel()
 
 			var result QueryTwoBitsResult
-			err := c.client.QueryTwoBits("device_token", &result)
+			err := c.client.QueryTwoBits(context.Background(), "device_token", &result)
 
 			if c.noErr {
 				if err != nil {

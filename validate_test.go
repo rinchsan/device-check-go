@@ -1,6 +1,7 @@
 package devicecheck
 
 import (
+	"context"
 	"io"
 	"net/http"
 	"strings"
@@ -59,7 +60,7 @@ func TestClient_ValidateDeviceToken(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 
-			err := c.client.ValidateDeviceToken("device_token")
+			err := c.client.ValidateDeviceToken(context.Background(), "device_token")
 
 			if c.noErr {
 				if err != nil {

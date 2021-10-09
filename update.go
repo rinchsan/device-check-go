@@ -1,6 +1,7 @@
 package devicecheck
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"time"
@@ -19,7 +20,7 @@ type updateTwoBitsRequestBody struct {
 }
 
 // UpdateTwoBits updates two bits for device token.
-func (client *Client) UpdateTwoBits(deviceToken string, bit0, bit1 bool) error {
+func (client *Client) UpdateTwoBits(ctx context.Context, deviceToken string, bit0, bit1 bool) error {
 	key, err := client.cred.key()
 	if err != nil {
 		return fmt.Errorf("devicecheck: failed to create key: %w", err)
@@ -38,7 +39,7 @@ func (client *Client) UpdateTwoBits(deviceToken string, bit0, bit1 bool) error {
 		Bit1:          bit1,
 	}
 
-	code, respBody, err := client.api.do(jwt, updateTwoBitsPath, body)
+	code, respBody, err := client.api.do(ctx, jwt, updateTwoBitsPath, body)
 	if err != nil {
 		return fmt.Errorf("devicecheck: failed to update two bits: %w", err)
 	}
