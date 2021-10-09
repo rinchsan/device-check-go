@@ -124,9 +124,15 @@ func TestCredentialBytes_key(t *testing.T) {
 
 	cases := map[string]struct {
 		filename string
+		noErr    bool
 	}{
 		"valid filename": {
 			filename: "revoked_private_key.p8",
+			noErr:    true,
+		},
+		"invalid private key": {
+			filename: "invalid_private_key.p8",
+			noErr:    false,
 		},
 	}
 
@@ -143,11 +149,20 @@ func TestCredentialBytes_key(t *testing.T) {
 			cred := NewCredentialBytes(raw)
 			key, err := cred.key()
 
-			if err != nil {
-				t.Errorf("want 'nil', got '%+v'", err)
-			}
-			if key == nil {
-				t.Error("want 'not nil', got 'nil'")
+			if c.noErr {
+				if err != nil {
+					t.Errorf("want 'nil', got '%+v'", err)
+				}
+				if key == nil {
+					t.Error("want 'not nil', got 'nil'")
+				}
+			} else {
+				if err == nil {
+					t.Error("want 'not nil', got 'nil'")
+				}
+				if key != nil {
+					t.Errorf("want 'nil', got '%+v'", key)
+				}
 			}
 		})
 	}

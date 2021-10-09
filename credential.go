@@ -50,7 +50,12 @@ func NewCredentialBytes(raw []byte) Credential {
 }
 
 func (cred credentialBytes) key() (*ecdsa.PrivateKey, error) {
-	return ecc.ReadPrivate(cred.raw)
+	key, err := ecc.ReadPrivate(cred.raw)
+	if err != nil {
+		return nil, fmt.Errorf("ecc: %w", err)
+	}
+
+	return key, nil
 }
 
 type credentialString struct {

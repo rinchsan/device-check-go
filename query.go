@@ -33,7 +33,12 @@ type Time struct {
 const timeFormat = "2006-01"
 
 func (t Time) MarshalJSON() ([]byte, error) {
-	return json.Marshal(t.Format(timeFormat))
+	b, err := json.Marshal(t.Format(timeFormat))
+	if err != nil {
+		return nil, fmt.Errorf("json: %w", err)
+	}
+
+	return b, nil
 }
 
 func (t *Time) UnmarshalJSON(b []byte) error {
@@ -78,5 +83,9 @@ func (client *Client) QueryTwoBits(ctx context.Context, deviceToken string, resu
 		return fmt.Errorf("devicecheck: %w", ErrBitStateNotFound)
 	}
 
-	return json.NewDecoder(strings.NewReader(respBody)).Decode(result)
+	if err := json.NewDecoder(strings.NewReader(respBody)).Decode(result); err != nil {
+		return fmt.Errorf("json: %w", err)
+	}
+
+	return nil
 }
