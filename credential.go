@@ -3,8 +3,9 @@ package devicecheck
 import (
 	"crypto/ecdsa"
 	"fmt"
-	"github.com/dvsekhvalnov/jose2go/keys/ecc"
 	"os"
+
+	"github.com/dvsekhvalnov/jose2go/keys/ecc"
 )
 
 // Credential provides credential for DeviceCheck API.
