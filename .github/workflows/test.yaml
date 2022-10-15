@@ -1,4 +1,4 @@
-name: CI
+name: Test
 
 on:
   pull_request:
@@ -10,14 +10,33 @@ on:
 
 jobs:
 
+  go-versions:
+    name: Fetch Go versions
+    runs-on: ubuntu-latest
+    outputs:
+      versions: ${{ steps.versions.outputs.value }}
+    steps:
+      - name: Fetch versions
+        id: versions
+        run: |
+          versions=$(curl -s 'https://go.dev/dl/?mode=json' | jq -c 'ma(.version[2:])')
+          echo "::set-output name=value::${versions}"
+
   lint:
     name: Lint
+    needs:
+      - go-versions
+    stratgy:
+      matrix:
+        go-version: ${{ fromJson(needs.go-versions.outputs.versions) }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Setup Go
         uses: actions/setup-go@v3
+        with:
+          go-version: ${{ matrix.go-version }}
       - name: Run golangci-lint
         uses: golangci/golangci-lint-action@v3
         with:
@@ -31,7 +50,7 @@ jobs:
     name: Test
     strategy:
       matrix:
-        go-version: [1.16.x, 1.17.x]
+        go-version: ${{ fromJson(needs.go-versions.outputs.versions) }}
         os: [ubuntu-latest, macos-latest]
     runs-on: ${{ matrix.os }}
     steps:
@@ -53,7 +72,7 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v3
         with:
-          go-version: 1.17.x
+          go-version: 1.19.x
       - name: Generate coverage
         run: go test ./... -cover -coverprofile coverage.out -covermode atomic
       - name: Upload coverage
