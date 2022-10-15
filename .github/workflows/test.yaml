@@ -48,6 +48,8 @@ jobs:
 
   test:
     name: Test
+    needs:
+      - go-versions
     strategy:
       matrix:
         go-version: ${{ fromJson(needs.go-versions.outputs.versions) }}
