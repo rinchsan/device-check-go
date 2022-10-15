@@ -3,9 +3,8 @@ package devicecheck
 import (
 	"crypto/ecdsa"
 	"fmt"
-	"io/ioutil"
-
 	"github.com/dvsekhvalnov/jose2go/keys/ecc"
+	"os"
 )
 
 // Credential provides credential for DeviceCheck API.
@@ -25,9 +24,9 @@ func NewCredentialFile(filename string) Credential {
 }
 
 func (cred credentialFile) key() (*ecdsa.PrivateKey, error) {
-	raw, err := ioutil.ReadFile(cred.filename)
+	raw, err := os.ReadFile(cred.filename)
 	if err != nil {
-		return nil, fmt.Errorf("ioutil: %w", err)
+		return nil, fmt.Errorf("os: %w", err)
 	}
 
 	key, err := ecc.ReadPrivate(raw)
