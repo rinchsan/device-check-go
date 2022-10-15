@@ -1,7 +1,7 @@
 package devicecheck
 
 import (
-	"io/ioutil"
+	"os"
 	"reflect"
 	"testing"
 )
@@ -104,7 +104,7 @@ func TestNewCredentialBytes(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 
-			raw, err := ioutil.ReadFile(c.filename)
+			raw, err := os.ReadFile(c.filename)
 			if err != nil {
 				t.Errorf("want 'nil', got '%+v'", err)
 			}
@@ -141,7 +141,7 @@ func TestCredentialBytes_key(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 
-			raw, err := ioutil.ReadFile(c.filename)
+			raw, err := os.ReadFile(c.filename)
 			if err != nil {
 				t.Errorf("want 'nil', got '%+v'", err)
 			}
@@ -184,7 +184,7 @@ func TestNewCredentialString(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 
-			raw, err := ioutil.ReadFile(c.filename)
+			raw, err := os.ReadFile(c.filename)
 			if err != nil {
 				t.Errorf("want 'nil', got '%+v'", err)
 			}
@@ -221,7 +221,7 @@ func TestCredentialString_key(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 
-			raw, err := ioutil.ReadFile(c.filename)
+			raw, err := os.ReadFile(c.filename)
 			if err != nil {
 				t.Errorf("want 'nil', got '%+v'", err)
 			}
