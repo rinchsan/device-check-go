@@ -16,12 +16,16 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+      - name: Setup Go
+        uses: actions/setup-go@v3
       - name: Run golangci-lint
         uses: golangci/golangci-lint-action@v3
         with:
           version: v1.49
       - name: Run gosec
         run: go run github.com/securego/gosec/v2/cmd/gosec@latest ./...
+      - name: Run govulncheck
+        run: go run golang.org/x/vuln/cmd/govulncheck@latest ./...
 
   test:
     name: Test
