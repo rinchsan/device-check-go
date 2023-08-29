@@ -60,7 +60,8 @@ func (api api) do(ctx context.Context, jwt, path string, requestBody interface{}
 
 	resp, err := api.client.Do(req)
 	if err != nil {
-		return 0, "", fmt.Errorf("http: %w", err)
+		traceID := resp.Header.Get("x-b3-traceid")
+		return 0, "", fmt.Errorf("http: %w: x-b3-traceid: %s", err, traceID)
 	}
 	defer resp.Body.Close()
 

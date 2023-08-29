@@ -41,7 +41,7 @@ func (client *Client) UpdateTwoBits(ctx context.Context, deviceToken string, bit
 
 	code, respBody, err := client.api.do(ctx, jwt, updateTwoBitsPath, body)
 	if err != nil {
-		return fmt.Errorf("devicecheck: failed to update two bits: %w", err)
+		return fmt.Errorf("devicecheck: failed to update two bits: %w: %s", err, respBody)
 	}
 
 	if code != http.StatusOK {
