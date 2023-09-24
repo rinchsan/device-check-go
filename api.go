@@ -64,6 +64,7 @@ func (api api) do(ctx context.Context, jwt, path string, requestBody interface{}
 		if resp != nil {
 			traceID = resp.Header.Get("x-b3-traceid")
 		}
+
 		return 0, "", fmt.Errorf("http: %w: x-b3-traceid: %s", err, traceID)
 	}
 	defer resp.Body.Close()
