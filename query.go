@@ -72,7 +72,7 @@ func (client *Client) QueryTwoBits(ctx context.Context, deviceToken string, resu
 
 	code, respBody, err := client.api.do(ctx, jwt, queryTwoBitsPath, body)
 	if err != nil {
-		return fmt.Errorf("devicecheck: failed to query two bits: %w", err)
+		return fmt.Errorf("devicecheck: failed to query two bits: %w: %s", err, respBody)
 	}
 
 	if code != http.StatusOK {
