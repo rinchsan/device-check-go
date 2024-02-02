@@ -78,6 +78,6 @@ jobs:
       - name: Generate coverage
         run: go test ./... -cover -coverprofile coverage.out -covermode atomic
       - name: Upload coverage
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v4
         with:
           file: ./coverage.out
